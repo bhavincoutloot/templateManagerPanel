@@ -1,0 +1,3620 @@
+<!doctype html>
+<html>
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+    crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/css/mdb.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/css/bootstrap-select.min.css">
+  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+  <link href="https://fonts.googleapis.com/css?family=Lato&display=swap" rel="stylesheet">
+
+  <title>Sell Templating Engine</title>
+  <style>
+      #header {
+      width: 100%;
+      height: 7vh;
+      background: #5a95f5;
+    }
+
+    .no_margin {
+      margin: 0px !important;
+    }
+
+    body {
+      font-family: 'Lato', sans-serif;
+    }
+
+
+
+
+.sidenav {
+
+  height: 100%;
+
+width: 200px;
+
+position: fixed;
+
+z-index: 1;
+
+top: 0;
+
+left: 0;
+
+background-color: #ED4C67;
+
+overflow-x: hidden;
+
+padding-top: 20px;
+
+color: white;
+
+}
+
+.sidenav a {
+  padding: 6px 6px 6px 32px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #ffffff;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+  margin-top: 0px;
+}
+
+.main h1{
+  margin: 5px;
+  margin-bottom: 15px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+
+#selectpicker{
+      background: #ffffff;
+      padding: 10px;
+    }
+
+.list_button{
+font-weight: bold;
+
+padding-bottom: 4px;
+align-items: end;
+
+padding-top: 4px;
+
+padding-right: 15px;
+
+padding-left: 15px;
+
+border-radius: 4px;
+color: white;
+background: #ED4C67;
+}
+
+
+.list_button:hover{
+  color: black;
+}
+
+
+
+pre{
+    display: block;
+    font-size: 106.5%;
+    color: #212529;
+    background: white;
+    padding: 10px;
+    font-family: inherit;
+    
+  }
+
+  #loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+  @-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+
+  </style>
+</head>
+
+<body class="mostly-customized-scrollbar"> 
+
+<div id="loader" style="display: none;"></div>
+
+<div class="sidenav">
+  <a id="refresh" onclick="location.reload()" href="#">Templates</a>
+  <a id="add_template" data-toggle="modal" data-target="#take_template_name_modal" href="#">Add Template</a>
+  <a id="add_page" style="visibility: hidden;" href="#">Add Pages</a>
+  <a id="display_logs" onclick="displayLogs()" href="#">Display Logs</a>
+  <a id="save_changes" onclick="saveChanges()" style="visibility: hidden;" href="#">Save Changes</a>
+  <a id="add_new_template" onclick="addNewTemplate()" style="visibility: hidden;" href="#">Save Template</a>
+  <a id="reset_template" onclick="resetTemplateData()" style="visibility: hidden;"  href="#">Reset Template</a>
+  <a id="back_button" onclick="backPressed()" style="visibility: hidden;" href="#">Back</a>
+
+  <img class="img-fluid img-thumbnail" src="https://cdn1.coutloot.com/chatImages/1560852654810.png" style="background-color: #ED4C67; height: 50px; width: 100px; margin: 0 auto; display: block; margin-bottom: 15px;">
+
+</div>
+
+
+
+<div class="main">
+  <h1 id="main_header">All Templates</h1>
+  <div class="md-form mt-0 m-2" style="width: 250px; margin: 20px;">
+    <input class="form-control" type="text" id="searchInput" onkeyup="searchFunction()" placeholder="Search for names.." >
+  </div>
+  <div style="margin:0px!important;height: 93vh;">
+    <div class="row no_margin">
+
+        <div class="col-md-8 no_margin" id="componentPicker" style="padding:10px; display: none;">
+
+          <div class="container">
+            <select id="selectpicker" onchange="component_selected()" style="width: 355px;">
+              <option disabled selected>Select Component</option>
+
+              <optgroup label="Complete Screen Components" data-max-options="2">
+                <option id="complete_screen" value="0">C1 - Single Selection List</option>
+                <option id="complete_screen" value="1">C2 - Multiple Selection List</option>
+                <option id="complete_screen" value="2">C7 - Varient + Price Dialog Selection List</option>
+                <option id="complete_screen" value="3">C8 - Quantity Slider - Mulitple Selection List</option>
+                <option id="complete_screen" value="4">Address Selection Screen</option>
+                <option id="complete_screen" value="5">Price & Service Selection Screen</option>
+                <option id="complete_screen" value="6">Only Services Selection Screen</option>
+                <option id="complete_screen" value="7">Category Screen</option>
+                <option id="complete_screen" value="8">Capture Image Screen</option>
+                <option id="complete_screen" value="9">Billing Warranty Screen</option>
+                <option id="complete_screen" value="10">Thank you Screen</option>
+              </optgroup>
+              <optgroup label="Multi Components for Single Screen" data-max-options="2">
+                <option value="11">C3 - Date Selector</option>
+                <option value="12">C4 - Place Selector</option>
+                <option value="13">C4 - Time Selector</option>
+                <option value="14">C5 - Multiple Choice Questions</option>
+                <option value="15">C6 - Single Choice Questions</option>
+                <option value="16">C9 - Static Page</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+
+
+
+        <ul id="listContainer" class="list-group list-group-flush shadow" style="width: auto; height: 650px; overflow-y: scroll;">
+
+          <div id="templateList"> </div>
+          <div id="pagesList"> </div>
+          <div id="componentList"> </div>
+          <div id="logsList"> </div>
+
+        </ul>
+    </div>
+  </div>
+</div>
+
+<!-- Category Input -->
+
+<div class="modal fade" id="modalCategoryList" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Category Input</h4>
+
+<!--        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <i class="fas fa-envelope prefix grey-text"></i>
+          <input type="text" id="categoryInput" onkeyup="searchCategoryFunction()" class="form-control">
+          <label data-error="wrong" data-success="right"  for="defaultForm-email">Enter Category Name</label>
+        </div>
+
+        <div class="md-form mb-4">
+            <ul id="categoryListContainer" class="list-group list-group-flush" style="width: 100%; height: 200px; overflow-y: scroll; cursor: pointer">
+
+            <div id="categoryList"> </div>
+          </ul>
+        
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<!-- -->
+
+
+
+
+<!-- Adding Components -->
+
+
+  <!-- Template Name Input. -->
+    <div class="modal fade" id="take_template_name_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Enter Template Category</h5>
+          </div>
+          <div class="modal-body">
+            <!-- Material input -->
+            <div class="md-form">
+              <input type="text" id="modal_input" class="form-control">
+              <label for="form1">Template Category</label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="process_name()">Create</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Page Data -->
+    <div class="modal fade" id="page_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel"> Enter Components for Page </h5>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="addNewPage()">OK</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- Modals for Components -->
+
+
+
+
+<!-- C1 -->
+    <div class="modal fade right" id="c1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C1 - Single Selection List</h4>
+            <button type="button" class="close" id="C1_Close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c1_list_header" class="form-control" placeholder="Enter List Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c1_list_subHeader" class="form-control" placeholder="Enter List Sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="c1_key" class="form-control" placeholder="Enter Key For Selection">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c1_data_checkbox" onchange="c1_data_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c1_data_checkbox">Send Data via Url</label>
+            </div>
+            <input type="text" id="data_url_input" class="form-control" placeholder="Enter Data Url" onclick="add_inline_data_clicked()"
+              >
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c1_search_checkbox" onchange="c1_search_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c1_search_checkbox">List is Searchable</label>
+            </div>
+
+            <input type="text" id="c1_search_url_input" class="form-control" placeholder="Enter Search Url" >
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="form-control btn btn-primary" onclick="process_c1()">Save changes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C1 -->
+    <!-- C1 Inline Data -->
+    <div class="modal fade right" id="add_inline_data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">Add Manual Inline Data</h4>
+            <button type="button" class="close" id="C1_data_model" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="list_display_header" class="form-control" placeholder="Enter Display Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="list_display_subHeader" class="form-control" placeholder="Enter Display Sub Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="list_display_icon" class="form-control" placeholder="Enter Display Icon">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <button type="button" class="form-control btn btn-primary" onclick="add_item_to_list()">Add To List</button>
+
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- Inline Data -->
+
+
+
+
+
+    <!-- C2 -->
+    <div class="modal fade right" id="c2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="c2_myModalLabel">C2 - Multiple Selection List</h4>
+            <button type="button" class="close" id="c2_Close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c2_list_header" class="form-control" placeholder="Enter List Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c2_list_subHeader" class="form-control" placeholder="Enter List Sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="c2_key" class="form-control" placeholder="Enter Key For Selection">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c2_data_checkbox" onchange="c2_data_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c2_data_checkbox">Send Data via Url</label>
+            </div>
+            <input type="text" id="c2_data_url_input" class="form-control" placeholder="Enter Data Url" onclick="c2_add_inline_data_clicked()">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c2_search_checkbox" onchange="c2_search_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c2_search_checkbox">List is Searchable</label>
+            </div>
+
+            <input type="text" id="c2_search_url_input" class="form-control" placeholder="Enter Search Url" >
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="form-control btn btn-primary" onclick="process_c2()">Save changes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C2 -->
+
+    <!-- C2 Inline Data -->
+    <div class="modal fade right" id="c2_add_inline_data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">Add Manual Inline Data</h4>
+            <button type="button" class="close" id="c2_data_model" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c2_list_display_header" class="form-control" placeholder="Enter Display Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c2_list_display_subHeader" class="form-control" placeholder="Enter Display Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="c2_list_display_icon" class="form-control" placeholder="Enter Display Icon">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <button type="button" class="form-control btn btn-primary" onclick="c2_add_item_to_list()">Add To List</button>
+
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- Inline Data -->
+
+
+    <!-- c7 -->
+    <div class="modal fade right" id="c7" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="c7_myModalLabel">C7 - Varient + Price Dialog Selection List</h4>
+            <button type="button" class="close" id="c7_Close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c7_list_header" class="form-control" placeholder="Enter List Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c7_list_subHeader" class="form-control" placeholder="Enter List Sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="c7_key" class="form-control" placeholder="Enter Key For Selection">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c7_data_checkbox" onchange="c7_data_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c7_data_checkbox">Send Data via Url</label>
+            </div>
+            <input type="text" id="c7_data_url_input" class="form-control" placeholder="Enter Data Url" onclick="c7_add_inline_data_clicked()"
+              >
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c7_search_checkbox" onchange="c7_search_checkbox()"
+                checked>
+              <label class="custom-control-label" for="c7_search_checkbox">List is Searchable</label>
+            </div>
+
+            <input type="text" id="c7_search_url_input" class="form-control" placeholder="Enter Search Url" >
+
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="form-control btn btn-primary" onclick="process_c7()">Save changes</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C7 -->
+
+    <!-- C7 Inline Data -->
+    <div class="modal fade right" id="c7_add_inline_data" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+      aria-hidden="true" data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">Add Manual Inline Data</h4>
+            <button type="button" class="close" id="c7_data_model" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c7_list_display_header" class="form-control" placeholder="Enter Display Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c7_list_display_subHeader" class="form-control" placeholder="Enter Display Header*">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <input type="text" id="c7_list_display_icon" class="form-control" placeholder="Enter Display Icon">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <button type="button" class="form-control btn btn-primary" onclick="c7_add_item_to_list()">Add To List</button>
+
+
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- Inline Data -->
+
+
+
+
+
+    <!-- C3 -->
+    <div class="modal fade right" id="c3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C3 - Date Selection Component</h4>
+            <button type="button" class="close" id="c3_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c3_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c3_list_subHeader" class="form-control" placeholder="Enter sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c3_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c3_iscompulsory">
+              <label class="custom-control-label" for="c3_iscompulsory">Is Compulsory?</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c3_validation" onchange="c3_validation_checkbox()"
+                checked="true">
+              <label class="custom-control-label" for="c3_validation">validation</label>
+            </div>
+
+
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <div id="c3_fade">
+
+              <input type="text" id="c3_validationText" class="form-control" placeholder="validation text">
+
+
+              <div class="gap" style="background:#FFF!important;padding: 5px;"></div>
+
+              <input type="Text" id="c3_from_date" class="form-control" placeholder="From  -  YYYY-MM-DD" style="width: 210px;">
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="c3_from_validation">
+                <label class="custom-control-label" for="c3_from_validation">empty</label>
+              </div>
+
+
+              <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+              <input type="Text" id="c3_to_date" class="form-control" placeholder="TO  -  YYYY-MM-DD" style="width: 210px;">
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="c3_to_validation">
+                <label class="custom-control-label" for="c3_to_validation">empty</label>
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+          <div class="modal-footer">
+            <button  id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c3()">Save changes</button>
+          </div>
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c3_currentPage()">add In Same Page</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C3 -->
+
+
+    <!-- C8 -->
+    <div class="modal fade right" id="c8" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C8 - Date Selection Component</h4>
+            <button type="button" class="close" id="c8_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c8_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c8_list_subHeader" class="form-control" placeholder="Enter sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c8_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c8_iscompulsory">
+              <label class="custom-control-label" for="c8_iscompulsory">Is Compulsory?</label>
+            </div>
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c8_validation" onchange="c8_validation_checkbox()"
+                checked="true">
+              <label class="custom-control-label" for="c8_validation">validation</label>
+            </div>
+
+
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <div id="c8_fade">
+
+              <input type="text" id="c8_validationText" class="form-control" placeholder="validation text">
+
+              <div class="gap" style="background:#FFF!important;padding: 5px;"></div>
+
+              <input type="Text" id="c8_from_date" class="form-control" placeholder="From  -  YYYY-MM-DD" style="width: 210px;">
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="c8_from_validation">
+                <label class="custom-control-label" for="c8_from_validation">empty</label>
+              </div>
+
+
+              <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+              <input type="Text" id="c8_to_date" class="form-control" placeholder="TO  -  YYYY-MM-DD" style="width: 210px;">
+
+              <div class="custom-control custom-checkbox">
+                <input type="checkbox" class="custom-control-input" id="c8_to_validation">
+                <label class="custom-control-label" for="c8_to_validation">empty</label>
+              </div>
+
+
+            </div>
+
+          </div>
+
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c8()">Save changes</button>
+          </div>
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c8_currentPage()">add In Same Page</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C8 -->
+
+
+
+    <!-- C4 -->
+    <div class="modal fade right" id="c4" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C4 - Place Selection Component</h4>
+            <button type="button" class="close" id="c4_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c4_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c4_list_subHeader" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c4_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c4_iscompulsory">
+              <label class="custom-control-label" for="c4_iscompulsory">Is Compulsory?</label>
+            </div>
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c4()">Save changes</button>
+          </div>
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c4_currentPage()">add In Same Page</button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- C4 -->
+
+
+    <!-- C5-->
+    <div class="modal fade right" id="c5" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C5 - Multiple Choice Question</h4>
+            <button type="button" class="close" id="c5_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+
+            <input type="text" id="c5_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c5_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+            <input type="text" id="c5_list_subHeader" class="form-control" placeholder="Enter SubHeader">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c5_iscompulsory">
+              <label class="
+custom-control-label" for="c5_iscompulsory">Is Compulsory?</label>
+            </div>
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+            <textarea class="form-control" rows="5" id="c5_answers" placeholder="Enter answers/options json"></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c5()">Save changes</button>
+          </div>
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c5_currentPage()">add In Same Page</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    <!-- C5 -->
+
+
+    <!-- C6-->
+    <div class="modal fade right" id="c6" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C6 - Single Choice Questions</h4>
+            <button type="button" class="close" id="c6_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+
+            <input type="text" id="c6_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c6_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+            <input type="text" id="c6_list_subHeader" class="form-control" placeholder="Enter SubHeader">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c6_iscompulsory">
+              <label class="
+custom-control-label" for="c6_iscompulsory">Is Compulsory?</label>
+            </div>
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+            <textarea class="form-control" rows="5" id="c6_answers" placeholder="Enter answers/options json"></textarea>
+          </div>
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c6()">Save changes</button>
+          </div>
+
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c6_currentPage()">add In Same Page</button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- C6 -->
+
+
+    <!-- C9-->
+    <div class="modal fade right" id="c9" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C9 - Static Page</h4>
+            <button type="button" class="close" id="c9_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+
+            <input type="text" id="c9_key" class="form-control" placeholder="Enter Key">
+
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c9_iscompulsory">
+              <label class="
+custom-control-label" for="c9_iscompulsory">Is Compulsory?</label>
+            </div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c9()">Save changes</button>
+          </div>
+
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c9_currentPage()">add In Same Page</button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- C9 -->
+
+
+
+
+
+
+
+
+
+    <!-- /Modals for Components -->
+
+
+
+ <script src="https://code.jquery.com/jquery-3.4.0.js" integrity="sha256-DYZMCC8HTC+QDr5QNaIcfR7VSPtcISykd+6eSmBW5qo="crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/js/mdb.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+
+<script>
+
+  var allPages = [];
+  var newTemplate = [];
+  var currPage = [];
+
+  var dest = "";
+
+  var currComponentIndex = ""; 
+
+  var updatablePages = [];
+  var updatablePage = [];
+
+
+  //--------------------
+
+  var template = [];
+  var templateId = '';
+
+  var templateName = '';
+
+  var log = '';
+
+  //--------------------
+
+
+  var template = [];
+  var template_name = "";
+  var currentTemplateId = '';
+
+
+  $.ajax({
+    type: 'POST',
+    url: "http://localhost:3000/test/getTemplateList",
+    success: function (data) {
+      console.log("temp_data - ", data['temp']);
+      var html = '';
+
+                  for(var i=0;i<data['temp'].length;i++)
+                    {
+
+                      html += '<li class="list-group-item"><div class="no_margin"><div id="innerDiv" class="no_margin"><div><b>Template ID : '+data['temp'][i]['_id']+'</b></div><div id="displayCategory">Category : '+data['temp'][i]['name']+'</div></div><div class="row no_margin"><div class="col-md-4"></div><div class="col-md-8"><div style="float:right;"><div class="row no_margin" style="cursor: pointer"><div class="list_button" style="margin-left:0px;" id='+data['temp'][i]['_id']+' onclick="editTemplate(this.id);">Edit</div></div></div></div></div></div></li>';
+
+                  }
+            $('#back_button').css('visibility', 'hidden');
+            $('#add_new_template').css('visibility', 'hidden');
+
+            $('#templateList').append(html);
+            log = '';
+            $('#searchInput').css('visibility', 'visible');
+            $('#reset_template').css('visibility', 'hidden');
+            $('#add_page').css('visibility', 'hidden');
+            $('#searchInput').val('');
+           // $('#take_template_name_modal').hide();
+
+    }
+  })
+
+  $("#menu_templates").on('click', function() {
+      console.log("Menu_Templates");
+  });
+
+
+  function searchFunction() {
+    var input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("searchInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("listContainer");
+    li = $(".list-group-item");
+    for (i = 0; i < li.length; i++) {
+        outerDiv = li[i].getElementsByTagName("div")[0];
+        innerDiv = outerDiv.getElementsByTagName("div")[0];
+        id = innerDiv.getElementsByTagName("div")[0];
+        category = innerDiv.getElementsByTagName("div")[1];
+        //console.log("Cat: " + category.innerText + category.textContent);
+        txtValue = category.textContent || category.innerText;
+        txtValue2 = id.textContent || id.innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1 || txtValue2.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+}
+
+
+  function editTemplate(id) {
+
+      console.log("ID: " + id);
+      templateId = id;
+
+      $.ajax({ 
+          type: 'POST',
+          url: "http://localhost:3000/test/getTemplate",
+          data: { 'tempId':id },
+          success: function(data) {
+            var temp_data = data.temp;
+            //console.log("Template Data: " + JSON.stringify(data.temp, undefined, 2));
+            //console.log(JSON.stringify(temp_data, undefined, 2));
+            //console.log(Object.keys(data.temp));
+            console.log(JSON.stringify(temp_data, undefined, 2));
+            displayPages(temp_data.component);
+            templateName = temp_data.name;
+          }
+      });
+  }
+
+  function displayPages(pages) {
+      //console.log("Old: "+JSON.stringify(pages, undefined, 2));
+
+      template = pages;
+
+      $('#add_new_template').css('visibility', 'hidden');
+      $('#add_page').css('visibility', 'visible');
+
+      $('#add_page').on('click', function() {
+          $('#page_modal').modal('toggle');
+      });
+
+      $('#save_changes').css('visibility', 'visible');
+      $('#searchInput').css('visibility', 'hidden');
+      $('#reset_template').css('visibility', 'visible');
+
+      var templatePages = ''
+      var pageCount = 1;
+
+      allPages = pages;
+
+//      console.log(typeof allPages);
+
+      updatablePages = JSON.parse(JSON.stringify(allPages));
+
+      pages.forEach(function(page) {
+
+          //console.log(page[0].componentId);
+          //console.log(page[0].componentDetails.header);
+
+          pageComponents = '';
+          pageDetails = '';
+
+          if(page[0].componentId == 'C1' || page[0].componentId == 'C2' || page[0].componentId == 'C7' || page[0].componentId == 'C8') {
+            pageComponents = page[0].componentId;
+            pageDetails = page[0].componentDetails.header;
+
+          } else {
+            page.forEach(function(component) {
+
+                pageComponents += component.componentId + ', ';
+                pageDetails += component.componentDetails.header + ', ';
+
+            });
+          }
+
+          templatePages += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Page No. : '+pageCount+'</b></div><div>Components : '+pageComponents+'</div><div>Component Details : '+pageDetails+'</div></div><div class="row no_margin"><div class="col-md-4"></div><div class="col-md-8"><div style="float:right;"><div class="row no_margin" style="cursor: pointer"><div class="list_button" style="margin-left:5px;" onclick="displayComponents('+ (pageCount-1) +');">Edit</div><div class="list_button" style="margin-left:5px;" onclick="removePage('+ (pageCount-1) +');">Remove</div></div></div></div></div></div></li>';
+
+          pageCount++;
+
+      });
+      //console.log(pages);
+
+      $('#templateList').hide();
+      $('#componentList').hide();      
+
+      $('#pagesList').append(templatePages);
+      $('#pagesList').show();
+
+      dest = "templates";
+      $('#back_button').css('visibility', 'visible');
+  }
+
+
+  function addPages() {
+    console.log("Inside addPages()");
+  }
+
+
+  function displayComponents(pageIndex) {
+
+      components = allPages[pageIndex];
+
+//      $('#save_changes').css('visibility', 'hidden');
+
+    
+
+      console.log(components);
+
+      currPage = allPages[pageIndex];
+
+      updatablePage = JSON.parse(JSON.stringify(currPage));
+
+      var pageComponents = '';
+      var count = 1;
+
+      console.log("Original: " + currPage);
+
+      components.forEach(function(component) {
+
+          if(component.componentDetails.hasOwnProperty('data') && component.componentDetails.data.length > 0) {
+          
+          if (component.componentId == "C6") {
+
+            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+
+          } /*else if (component.componentId == "C3" || component.componentId == "C4" || component.componentId == "C5" || component.componentId == "C9") {
+
+
+          }*/ else {
+           
+            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+          }
+            var dataItems = '<tr> <td> Title </td> <td> Id </td> <td> Sub Title </td> <td> Icon </td> </tr>';
+            var itemCount = 0;
+
+            component.componentDetails.data.forEach(function(item) {
+
+
+                dataItems += '<tr> <td><input id="component_data_title_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displayTitle+'" /></td> <td><input id="component_data_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displayId+'" /></td> <td><input id="component_data_subtitle_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displaySubTitle+'" /></td> <td><a id="component_data_icon_'+(count-1)+'_'+itemCount+'" href="'+ (item.displayIcon ? item.displayIcon : "#" ) + '"> '+ (item.displayIcon ? "Click to show Icon" : "No Image to display" ) +' </a></td><td><input onchange="changeIcon('+(count-1)+','+itemCount+')" id="component_change_data_icon_'+(count-1)+'_'+itemCount+'" type="file" /></td> </tr>';
+
+                console.log(item.displayIcon ? item.displayIcon : '#');
+
+                itemCount++;
+            });
+
+            pageComponents += dataItems + '</table><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px; display:inline-block;" onclick="editComponent('+(count-1)+');">Save</div><div class="list_button" style="margin-left:5px; display:inline-block;" onclick="addDataInComponent('+(count-1)+');">Add Data</div></div></div></div></div></div></div></li>';
+
+
+          } else {
+
+            pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div class="m-2">DataUrl : <input id="component_dataurl" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div class="m-2">SearchUrl : <input id="component_searchurl" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+
+          }
+
+          count++;
+      });
+
+      $('#pagesList').hide();
+
+      //$('#componentPicker').css('visibility', 'visible');
+      $('#componentList').append(pageComponents);
+      $('#componentList').show();
+      $('#data_table').DataTable();
+
+      dest = "pages";
+      $('#back_button').css('visibility', 'visible');
+
+  }
+
+
+  function resetTemplateData() {
+
+    $.ajax({ 
+          type: 'POST',
+          url: "http://localhost:3000/test/resetTemplateData",
+          data: { 'tempId':templateId },
+          success: function(data) {
+
+            alert(data.status);
+            $('#refresh').click();
+          }
+      });
+
+  }
+
+
+  function removePage(pageIndex) {
+
+    allPages.splice(pageIndex, 1);
+    console.log(JSON.stringify(allPages, undefined, 2));
+    log += 'Page No. ' + (pageIndex+1) + ' removed from Template ' + templateId + ' ,  ';
+    $('#pagesList').empty();
+    displayPages(allPages);
+  }
+
+  function removeComponent(pageIndex, componentIndex) {
+
+    if(currPage.length == 1) {
+
+        allPages.splice(pageIndex, 1);
+        log += 'Page No. ' + (pageIndex+1) + ' removed from Template ' + templateId + ' ,  ';
+        console.log(JSON.stringify(allPages, undefined, 2));
+    
+    } else {
+    
+      currPage.splice(componentIndex, 1);
+      log += 'Component No. ' + (componentIndex+1) + ' removed from Page No. ' + (pageIndex+1) + ' of Template ' + templateId + ' ,  ';
+      console.log(JSON.stringify(currPage, undefined, 2));
+        
+    }
+
+    $('#componentList').empty();
+    displayPages(allPages);
+
+  }
+
+
+  function editComponent(componentIndex) {
+
+      //console.log(JSON.stringify(currPage[componentIndex], undefined, 2));
+
+      var component = currPage[componentIndex];
+
+      var updatedComponent = {};
+
+        updatedComponent['componentId'] = component.componentId;
+        if(component.componentId == "C6") $('#component_key').val();
+        else updatedComponent['key'] = component.key;
+        updatedComponent['componentDetails'] = {};
+
+      updatedComponent.componentDetails.header = $('#component_header').val();
+      updatedComponent.componentDetails.subHeader = $('#component_subheader').val();
+
+      if(typeof $('#component_dataurl').val() !== 'undefined') {
+        
+        updatedComponent.componentDetails.dataUrl = $('#component_dataurl').val();
+        updatedComponent.componentDetails.searchUrl = $('#component_searchurl').val();
+        
+        updatedComponent.componentDetails.data = [];
+
+
+      } else { 
+
+        updatedComponent.componentDetails.dataUrl = ""; 
+        updatedComponent.componentDetails.searchUrl = ""; 
+        updatedComponent.componentDetails.data = [];
+
+        var itemCount = 0;
+
+        component.componentDetails.data.forEach(function(item) {
+
+            if ($("#component_data_"+componentIndex+"_"+itemCount+"").val() != "" ||
+                $("#component_data_title_"+componentIndex+"_"+itemCount+"").val() != "") {
+                
+
+                var dataItem = {};
+                dataItem.displaySubTitle = $("#component_data_subtitle_"+componentIndex+"_"+itemCount+"").val();
+                //dataItem.displayIcon = item.displayIcon;
+
+                dataItem.displayIcon = updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon;
+
+                console.log("Icons: " + updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon);
+
+                dataItem.displayId = $("#component_data_"+componentIndex+"_"+itemCount+"").val();
+                dataItem.displayTitle = $("#component_data_title_"+componentIndex+"_"+itemCount+"").val();
+
+                updatedComponent.componentDetails.data.push(dataItem);
+
+            } /* else {
+                
+                dataItem.displayId = "";
+                dataItem.displayTitle = "";
+            } */
+
+  //          console.log($("#component_data_"+itemCount+"").val());
+            
+            itemCount++;
+        });
+
+        while(itemCount < updatablePage[componentIndex].componentDetails.data.length) {
+
+            if ($("#component_data_"+componentIndex+"_"+itemCount+"").val() != "" ||
+                $("#component_data_title_"+componentIndex+"_"+itemCount+"").val() != "") {
+                
+
+                var dataItem = {};
+                dataItem.displaySubTitle = $("#component_data_subtitle_"+componentIndex+"_"+itemCount+"").val();
+                //dataItem.displayIcon = item.displayIcon;
+
+                dataItem.displayIcon = updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon;
+
+                dataItem.displayId = $("#component_data_"+componentIndex+"_"+itemCount+"").val();
+                dataItem.displayTitle = $("#component_data_title_"+componentIndex+"_"+itemCount+"").val();
+
+                updatedComponent.componentDetails.data.push(dataItem);
+            }
+            itemCount++;
+        }
+
+      }
+/*
+      console.log($('#component_header').val());
+      console.log($('#component_subheader').val());
+      console.log($('#component_dataurl').val());
+
+      console.log(allPages.indexOf(currPage));
+*/
+//      console.log("Old: " + JSON.stringify(component, undefined, 2));
+//      console.log("New: " + JSON.stringify(updatedComponent, undefined, 2));
+
+      console.log("OldData: "+JSON.stringify(allPages, undefined, 2));
+
+      var pageLoc = allPages.indexOf(currPage);
+      currPage[componentIndex] = updatedComponent;
+      allPages[pageLoc] = currPage;
+
+      console.log("Loc: " + pageLoc);
+
+      console.log("NewData: "+JSON.stringify(allPages, undefined, 2));
+
+      $('#pagesList').empty();
+      $('#componentList').empty();
+
+      $('#save_changes').css('visibility', 'visible');
+      $('#refresh').css('visibility', 'hidden');
+      $('#add_template').css('visibility', 'hidden');
+
+      log += 'Data Updated of Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+
+      displayPages(allPages);
+
+      //displayPagesToEdit(allPages);
+  }
+
+
+  function displayEditedComponents(pageIndex) {
+
+      components = updatablePages[pageIndex];
+
+//      console.log(components);
+      $('#save_changes').css('visibility', 'hidden');
+
+      var pageComponents = '';
+      var count = 1;
+
+      components.forEach(function(component) {
+
+          if(component.componentDetails.data.length > 0) {
+
+
+            if (component.componentId == "C6") {
+
+            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+
+          } else {
+           
+          
+            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div>Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+          }
+            var dataItems = '<tr> <td> Title </td> <td> Id </td> <td> Sub Title </td> <td> Icon </td> </tr>';
+            var itemCount = 0;
+
+            component.componentDetails.data.forEach(function(item) {
+
+
+
+
+                dataItems += '<tr> <td><input id="component_data_title_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displayTitle+'" /></td> <td><input id="component_data_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displayId+'" /></td> <td><input id="component_data_subtitle_'+(count-1)+'_'+itemCount+'" type="text" value="'+item.displaySubTitle+'" /></td> <td><a id="component_data_icon_'+(count-1)+'_'+itemCount+'" href="'+ (item.displayIcon ? item.displayIcon : "#" ) + '"> '+ (item.displayIcon ? "Click to show Icon" : "No Image to display" ) +' </a></td><td><input onchange="changeIcon('+(count-1)+','+itemCount+')" id="component_change_data_icon_'+(count-1)+'_'+itemCount+'" type="file" /></td> </tr>';
+
+                console.log(item.displayIcon ? item.displayIcon : '#');
+
+                itemCount++;
+            });
+
+             //'+ (item.displayIcon ? "Click to show Icon" : "No Image to display" ) +'
+
+            pageComponents += dataItems + '</table><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px; display:inline-block;" onclick="editComponent('+(count-1)+');">Save</div><div class="list_button" style="margin-left:5px; display:inline-block;" onclick="addDataInComponent('+(count-1)+');">Add Data</div></div></div></div></div></div></div></li>';
+
+
+
+
+          } else {
+
+            pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div><div>Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div>DataUrl : <input id="component_dataurl" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div>SearchUrl : <input id="component_searchurl" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+
+          }
+
+          count++;
+      });
+
+      $('#pagesList').hide();
+
+      //$('#componentPicker').css('visibility', 'visible');
+      $('#componentList').append(pageComponents);
+      $('#componentList').show();
+      $('#data_table').DataTable();
+
+      dest = "pages";
+      $('#back_button').css('visibility', 'visible');
+
+  }
+
+
+  function resetTemplate(id) {
+
+    $.ajax({ 
+          type: 'POST',
+          url: "http://localhost:3000/test/removeLog",
+          data: { 'id':id },
+          success: function(data) {
+
+            alert(data.status);
+            $('#refresh').click();
+          }
+      });
+
+  }
+
+
+  function displayLogs() {
+
+    $.ajax({ 
+          type: 'POST',
+          url: "http://localhost:3000/test/getLogs",
+          success: function(data) {;
+            //console.log("Template Data: " + JSON.stringify(data.temp, undefined, 2));
+            //console.log(JSON.stringify(temp_data, undefined, 2));
+            //console.log(Object.keys(data.temp));
+            console.log(JSON.stringify(data, undefined, 2));
+
+            var logData = '';
+
+            data.logs.forEach(function(log) {
+
+                        logData += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Template ID : '+log.tempId+'</b></div><div>Category : '+log.name+'</div><div>Date : '+log.date+'</div><div>Log : '+log.log+'</div></div><div class="row no_margin"><div class="col-md-4"></div><div class="col-md-8"><div style="float:right;"><div class="row no_margin" style="cursor: pointer"><div class="list_button" style="margin-left:5px;" onclick="resetTemplate('+ log._id +');">Undo</div></div></div></div></div></div></li>';
+            }); 
+
+            $('#templateList').hide();
+            $('#pagesList').hide();
+            $('#componentList').hide();
+            $('#searchInput').hide();
+            $('#main_header').hide();
+
+            $('#logsList').append(logData);
+            $('#logsList').show();
+            
+          }
+      });
+
+
+  }
+
+
+
+/*  function setCategoryName() {
+    
+    var text =  $('#categoryInput').val();
+    $('#categoryInput').val('');
+    $('#modalCategoryList').modal('toggle');
+    //$('#loader').css('display', 'block');
+  
+      if(text == "") ;
+      else {
+
+          $.ajax({                    
+                url: 'http://localhost:3000/test/getCategoryId',     
+                type: 'POST', 
+                data : {
+                  name : text 
+                },
+                dataType: 'json',                   
+                success: function(data) {
+
+                  console.log(data.categoryId);
+                  var categoryId = data.categoryId;
+        //          $('#url').val(data.image);
+                  var component = updatablePage[currComponentIndex];
+                  var componentIndex = currComponentIndex;
+
+
+                    if(categoryId) {
+
+                        var updatedComponent = {};
+
+                        updatedComponent['componentId'] = component.componentId;
+                        updatedComponent['key'] = component.key;
+                        updatedComponent['componentDetails'] = {};
+
+                      updatedComponent.componentDetails.header = $('#component_header').val();
+                      updatedComponent.componentDetails.subHeader = $('#component_subheader').val();
+
+
+                        updatedComponent.componentDetails.dataUrl = ""; 
+                        updatedComponent.componentDetails.searchUrl = ""; 
+                        updatedComponent.componentDetails.data = [];
+
+                        var itemCount = 0;
+
+                        component.componentDetails.data.forEach(function(item) {
+
+                            if ($("#component_data_"+componentIndex+"_"+itemCount+"").val() != "" ||
+                                $("#component_data_title_"+componentIndex+"_"+itemCount+"").val()) {
+                                
+
+                                var dataItem = {};
+                                dataItem.displaySubTitle = $("#component_data_subtitle_"+componentIndex+"_"+itemCount+"").val();
+                                dataItem.displayIcon = updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon;
+
+
+                                dataItem.displayId = $("#component_data_"+componentIndex+"_"+itemCount+"").val();
+                                dataItem.displayTitle = $("#component_data_title_"+componentIndex+"_"+itemCount+"").val();
+
+                                updatedComponent.componentDetails.data.push(dataItem);
+
+                            } /* else {
+                                
+                                dataItem.displayId = "";
+                                dataItem.displayTitle = "";
+                            } */
+
+                  //          console.log($("#component_data_"+itemCount+"").val());
+                            
+  /*                          itemCount++;
+                        });
+
+
+                        var dataItem = {};
+                        dataItem.displaySubTitle = "";
+                        dataItem.displayIcon = ""
+
+                        dataItem.displayId = categoryId;
+                        dataItem.displayTitle = text;
+
+                        updatedComponent.componentDetails.data.push(dataItem);
+
+                      var pageLoc = updatablePages.indexOf(updatablePage);
+                      updatablePage[componentIndex] = updatedComponent;
+                      updatablePages[pageLoc] = updatablePage;
+
+
+                      console.log("New: "+JSON.stringify(allPages, undefined, 2));
+
+                      $('#pagesList').empty();
+                      $('#componentList').empty();
+
+                      $('#refresh').css('visibility', 'hidden');
+                      $('#add_template').css('visibility', 'hidden');
+                      $('#loader').css('display', 'hidden');
+
+                      log += 'New data added to Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+
+                      displayEditedComponents(pageLoc);
+
+                    } else {
+
+                      //var pageLoc = updatablePages.indexOf(updatablePage);
+                      //displayEditedComponents(pageLoc);
+
+                      $('#modalCategoryList').modal('toggle');
+                      alert('Invalid Category!');
+                    }
+
+                } 
+          });
+
+      }
+  }
+*/
+  function searchCategoryFunction() {
+    var div, input, filter, ul, li, a, i, txtValue;
+    input = document.getElementById("categoryInput");
+    filter = input.value.toUpperCase();
+    ul = document.getElementById("categoryListContainer");
+    div = ul.getElementsByTagName("div");
+    li = div[0].getElementsByTagName("li");
+    console.log(li);
+    for (i = 0; i < li.length; i++) {
+        console.log("Cat: " + li[i].innerText + li[i].textContent);
+        txtValue = li[i].textContent || li[i].innerText;
+        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            li[i].style.display = "";
+        } else {
+            li[i].style.display = "none";
+        }
+    }
+  }
+
+
+  function getCategoryName() {
+
+    return new Promise((resolve, reject) => {
+
+        $.ajax({                    
+                url: 'http://localhost:3000/test/getCategoryList',     
+                type: 'POST', 
+                dataType: 'json',                   
+                success: function(data) {
+
+                  console.log(data);
+
+                  var catList = data.categories;
+                  
+//                  if(!catList == 'None') {
+
+                      var listData = '';
+                      var index = 0;
+                      catList.forEach(function(item) {
+                        listData += '<li id='+index+' onclick=selectCategory(this.id)>' + item + '</li>';
+                        index++;
+                      });
+                      $('#categoryList').append(listData);
+
+                      $('#modalCategoryList').modal('toggle');
+                      resolve("Success");
+                  
+                  //} else {
+                    //alert("Can't fetch Category List!");
+                    //reject("Failed");
+                    //$('#refresh').click();
+                  //} 
+                }
+      });
+
+    });
+  }
+
+
+function selectCategory(id) {
+  var text = $('#'+id+'').text()
+  var str = text.split('-');
+
+  $('#modalCategoryList').modal('toggle');
+
+                  var component = updatablePage[currComponentIndex];
+                  var componentIndex = currComponentIndex;
+
+  var updatedComponent = {};
+
+                        updatedComponent['componentId'] = component.componentId;
+                        updatedComponent['key'] = component.key;
+                        updatedComponent['componentDetails'] = {};
+
+                      updatedComponent.componentDetails.header = $('#component_header').val();
+                      updatedComponent.componentDetails.subHeader = $('#component_subheader').val();
+
+
+                        updatedComponent.componentDetails.dataUrl = ""; 
+                        updatedComponent.componentDetails.searchUrl = ""; 
+                        updatedComponent.componentDetails.data = [];
+
+                        var itemCount = 0;
+
+                        component.componentDetails.data.forEach(function(item) {
+
+                            if ($("#component_data_"+componentIndex+"_"+itemCount+"").val() != "" ||
+                                $("#component_data_title_"+componentIndex+"_"+itemCount+"").val()) {
+                                
+
+                                var dataItem = {};
+                                dataItem.displaySubTitle = $("#component_data_subtitle_"+componentIndex+"_"+itemCount+"").val();
+                                dataItem.displayIcon = updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon;
+
+
+                                dataItem.displayId = $("#component_data_"+componentIndex+"_"+itemCount+"").val();
+                                dataItem.displayTitle = $("#component_data_title_"+componentIndex+"_"+itemCount+"").val();
+
+                                updatedComponent.componentDetails.data.push(dataItem);
+
+                            } /* else {
+                                
+                                dataItem.displayId = "";
+                                dataItem.displayTitle = "";
+                            } */
+
+                  //          console.log($("#component_data_"+itemCount+"").val());
+                            
+                            itemCount++;
+                        });
+
+
+                        var dataItem = {};
+                        dataItem.displaySubTitle = "";
+                        dataItem.displayIcon = ""
+
+                        dataItem.displayId = str[1].trim();
+                        dataItem.displayTitle = str[0].trim();
+
+                        updatedComponent.componentDetails.data.push(dataItem);
+
+                      var pageLoc = updatablePages.indexOf(updatablePage);
+                      updatablePage[componentIndex] = updatedComponent;
+                      updatablePages[pageLoc] = updatablePage;
+
+
+                      console.log("New: "+JSON.stringify(allPages, undefined, 2));
+
+                      $('#pagesList').empty();
+                      $('#componentList').empty();
+
+                      $('#refresh').css('visibility', 'hidden');
+                      $('#add_template').css('visibility', 'hidden');
+                      $('#loader').css('display', 'hidden');
+
+                      log += 'New data added to Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+
+                      displayEditedComponents(pageLoc);
+}
+
+
+async  function addDataInComponent(componentIndex) {
+
+      //console.log(JSON.stringify(currPage[componentIndex], undefined, 2));
+
+      var component = updatablePage[componentIndex];
+
+      currComponentIndex = componentIndex;
+
+      var status = await getCategoryName();
+
+      /*
+      var updatedComponent = {};
+
+        updatedComponent['componentId'] = component.componentId;
+        updatedComponent['key'] = component.key;
+        updatedComponent['componentDetails'] = {};
+
+      updatedComponent.componentDetails.header = $('#component_header').val();
+      updatedComponent.componentDetails.subHeader = $('#component_subheader').val();
+
+
+        updatedComponent.componentDetails.dataUrl = ""; 
+        updatedComponent.componentDetails.searchUrl = ""; 
+        updatedComponent.componentDetails.data = [];
+
+        var itemCount = 0;
+
+        component.componentDetails.data.forEach(function(item) {
+
+            if ($("#component_data_"+componentIndex+"_"+itemCount+"").val() != "" ||
+                $("#component_data_title_"+componentIndex+"_"+itemCount+"").val()) {
+                
+
+                var dataItem = {};
+                dataItem.displaySubTitle = $("#component_data_subtitle_"+componentIndex+"_"+itemCount+"").val();
+                dataItem.displayIcon = updatablePage[componentIndex].componentDetails.data[itemCount].displayIcon;
+
+
+                dataItem.displayId = $("#component_data_"+componentIndex+"_"+itemCount+"").val();
+                dataItem.displayTitle = $("#component_data_title_"+componentIndex+"_"+itemCount+"").val();
+
+                updatedComponent.componentDetails.data.push(dataItem);
+
+            } /* else {
+                
+                dataItem.displayId = "";
+                dataItem.displayTitle = "";
+            } */
+
+  //          console.log($("#component_data_"+itemCount+"").val());
+            /*
+            itemCount++;
+        });
+
+        var dataItem = {};
+        dataItem.displaySubTitle = "";
+        dataItem.displayIcon = ""
+
+        dataItem.displayId = "";
+        dataItem.displayTitle = "";
+
+        updatedComponent.componentDetails.data.push(dataItem);
+
+      var pageLoc = updatablePages.indexOf(updatablePage);
+      updatablePage[componentIndex] = updatedComponent;
+      updatablePages[pageLoc] = updatablePage;
+
+
+      console.log("New: "+JSON.stringify(allPages, undefined, 2));
+
+      $('#pagesList').empty();
+      $('#componentList').empty();
+
+      $('#refresh').css('visibility', 'hidden');
+      $('#add_template').css('visibility', 'hidden');
+
+      log += 'New data added to Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+
+      displayEditedComponents(pageLoc); 
+*/
+      //displayPagesToEdit(allPages);
+  }
+
+
+
+  function changeIcon(componentIndex, dataItemIndex) {
+
+      //console.log(JSON.stringify(currPage[componentIndex], undefined, 2));
+
+      $('#loader').css('display', 'block');
+
+      var component = updatablePage[componentIndex];
+
+      //console.log("Old: "+JSON.stringify(component, undefined, 2));
+
+      var filesSelected = $("#component_change_data_icon_"+componentIndex+"_"+dataItemIndex+"").prop('files');
+
+     //console.log("Files: " + JSON.stringify(filesSelected, undefined, 2));
+
+        if (filesSelected.length > 0) {
+
+          var fileToLoad = filesSelected[0];
+          var fileReader = new FileReader();
+
+          fileReader.onload = function(fileLoadedEvent) {
+            var srcData = fileLoadedEvent.target.result; // <--- data: base64
+            
+            sendImage(srcData).then(function(url) {
+
+              console.log("Received URL:" + url);
+
+              component.componentDetails.data[dataItemIndex].displayIcon = url;
+
+              var pageLoc = updatablePages.indexOf(updatablePage);
+              updatablePage[componentIndex] = component;
+              updatablePages[pageLoc] = updatablePage;
+
+              console.log("Old: "+JSON.stringify(currPage, undefined, 2));
+              console.log("New: "+JSON.stringify(updatablePage, undefined, 2));
+
+//              if(allPages == updatablePages) console.log("Same!");
+
+              $('#loader').css('display', 'none');
+
+//              $('#pagesList').empty();
+//              $('#componentList').empty();
+
+              $('#refresh').css('visibility', 'hidden');
+              $('#add_template').css('visibility', 'hidden');
+
+              log += 'Icon Changed of Data Item No.'+ (dataItemIndex+1) +' of Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+
+ //             displayEditedComponents(pageLoc); 
+            });
+          }
+        }
+        fileReader.readAsDataURL(fileToLoad);
+  }
+
+  function sendImage(imgData) {
+
+      return new Promise(function(resolve, reject) {
+        
+          $.ajax({                    
+            url: 'http://206.189.137.129:3300/tickets/uploadImage',     
+            type: 'POST', 
+            data : {
+              imageBase64 : imgData 
+            },
+            dataType: 'json',                   
+            success: function(data) {
+
+              resolve(data.image);
+    //          $('#url').val(data.image);
+            } 
+        });
+
+      });
+  }
+
+
+  function saveChanges() {
+
+      console.log(templateId);
+
+      console.log("Sending Data: " + allPages);
+
+      var updatedTemplate = {
+        name : templateName,
+        component : allPages
+      };
+
+
+      var tempData = {
+        'id' : templateId,
+        'log' : log,
+        'temp' : updatedTemplate
+      };
+
+      $('#save_changes').css('visibility', 'hidden');
+      $('#refresh').css('visibility', 'visible');
+      $('#add_template').css('visibility', 'visible');
+
+      //$('#loader').css('display', 'block');
+
+      var strTempData = JSON.stringify(tempData);
+
+      $.ajax({ 
+          type: 'POST',
+          url: "http://localhost:3000/test/updateTemplate",
+          data: {strTempData},
+          success: function(data) {
+
+              //$('#loader').css('display', 'none');
+              //console.log(data.status);
+              alert(data.status);
+              $('#refresh').click();
+          }
+      }) 
+
+
+     // location.reload();
+
+     console.log(strTempData);
+
+//      console.log(JSON.stringify(tempData, undefined, 2));
+  }
+
+
+  function backPressed() {
+
+      console.log("Dest: " + dest);
+
+      if (dest == "pages") { 
+
+        $('#pagesList').empty();
+        $('#componentList').empty();
+        displayPages(allPages);
+      
+      } else if(dest == "edit_pages") {
+        
+        $('#pagesList').empty();
+        displayPagesToEdit(allPages);
+    
+      } else {
+        
+        $('#templateList').empty();
+        $('#refresh').click();
+      }
+  }
+
+
+
+  function process_name() {
+   
+    template_name = $('#modal_input').val();
+
+    if (template_name) {
+        
+      $('#pagesList').empty();
+      $('#componentList').empty();
+      $('#take_template_name_modal').modal('hide');
+      $('#main_header').hide();
+      $('#searchInput').hide();
+      if (template != []) displayPagesToEdit(template);
+
+      $('#add_template').hide();
+      $('#add_page').css('visibility', 'visible');
+
+      $('#add_page').on('click', function() {
+          $('#page_modal').modal('toggle');
+      });
+    
+    } else alert("Please enter template name");
+  }
+
+
+
+  //------------------------------------------------------------
+    function displayPagesToEdit(pages) {
+      console.log("Old: "+JSON.stringify(pages, undefined, 2));
+
+      $('#add_new_template').css('visibility', 'visible');
+
+      var templatePages = ''
+      var pageCount = 1;
+
+      allPages = pages;
+
+      pages.forEach(function(page) {
+
+          //console.log(page[0].componentId);
+          //console.log(page[0].componentDetails.header);
+
+          pageComponents = '';
+          pageDetails = '';
+
+          if(page[0].componentId == 'C1' || page[0].componentId == 'C2' || page[0].componentId == 'C7' || page[0].componentId == 'C8') {
+            pageComponents = page[0].componentId;
+            pageDetails = page[0].componentDetails.header;
+
+
+            templatePages += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Page No. : '+pageCount+'</b></div><div>Components : '+pageComponents+'</div><div>Component Details : '+pageDetails+'</div></div><div class="row no_margin"><div class="col-md-4"></div><div class="col-md-8"><div><div class="row no_margin" style="cursor: pointer"><div class="list_button" style="margin-left:5px;" onclick="displayComponents('+ (pageCount-1) +');">Edit</div><div class="list_button" style="margin-left:5px;" onclick="deletePage('+ (pageCount-1) +');">Delete</div></div></div></div></div></div></li>';
+
+
+          } else {
+
+            page.forEach(function(component) {
+
+                pageComponents += component.componentId + ', ';
+                pageDetails += component.componentDetails.header + ', ';
+
+            });
+
+            templatePages += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Page No. : '+pageCount+'</b></div><div>Components : '+pageComponents+'</div><div>Component Details : '+pageDetails+'</div></div><div class="row no_margin"><div class="col-md-4"></div><div class="col-md-8"><div><div class="row no_margin" style="cursor: pointer"><div class="list_button" style="margin-left:5px;" onclick="displayComponents('+ (pageCount-1) +');">Edit</div><div class="list_button" style="margin-left:5px;" onclick="deletePage('+ (pageCount-1) +');">Delete</div><div class="list_button" style="margin-left:5px;" onclick="addComponentsToPage('+ (pageCount-1) +');">Add Component</div></div></div></div></div></div></li>';
+          }
+
+          pageCount++;
+
+      });
+      //console.log(pages);
+
+      $('#templateList').hide();
+      $('#componentList').hide();
+
+      //$('#refresh').hide();      
+
+      $('#pagesList').append(templatePages);
+      $('#pagesList').show();
+
+      dest = "templates";
+      $('#back_button').css('visibility', 'visible');
+ }
+  // ----------------------------------------------------
+
+  function addNewPage() {
+
+    $('[id=add_component]').css('visibility', 'hidden');
+    $('[id=save_component]').css('visibility', 'visible');
+    $('[id = complete_screen]').prop('disabled', false);
+
+    addComponents();
+  }
+
+
+  function addComponentsToPage(index) {
+
+    currPage = allPages[index];
+    $('[id=save_component]').css('visibility', 'hidden');
+    $('[id=add_component]').css('visibility', 'visible');
+    $('[id = complete_screen]').prop('disabled', true);
+
+    addComponents();
+  }
+
+
+
+  function addComponents() {
+
+      $('#page_modal').modal('hide');
+      $('#templateList').hide();
+      $('#pagesList').hide();
+      $('#componentList').hide();
+      $('#main_header').hide();
+      $('#searchInput').hide();
+
+      $('#componentPicker').css('display', 'block');
+
+      console.log("Template: " + JSON.stringify(template, undefined, 2));
+  }
+
+
+  function deletePage(index) {
+
+    if(confirm("Are you sure? Do you want to delete this page?")) {
+        allPages.splice(index, 1);
+    }
+    $('#pagesList').empty(); 
+    displayPagesToEdit(allPages);
+
+  }
+
+  function addNewTemplate() {
+
+    console.log("Saving New Template: ");
+    console.log("Final: " + JSON.stringify(template, undefined, 2));
+    alert("Saving " + template_name);
+    $('#refresh').click();
+
+    /*$.ajax({ 
+          type: 'POST',
+          url: "http://206.189.133.158:4000/test/getTemplate",
+          data: { 'temp':updatedTemplate },
+          success: function(data) {
+
+              // Data Updated!
+          }
+      }) */
+
+  }
+
+
+//-----------------------------Components-------------------------------------------
+
+
+  function open_modal(option) {
+
+    console.log("Option: " + option);
+
+    switch (option) {
+          case 1: {
+              console.log("Inside case1");
+              $('#c1').modal('show');
+              break;
+            };
+          case 2: {
+              $('#c2').modal('show');
+              break;
+            };
+          case 3: {
+              $('#c7').modal('show');
+              break;
+            };
+          case 4: {
+              $('#c8').modal('show');
+              break;
+            };
+          case 12: {
+              $('#c3').modal('show');
+              $("#selectpicker").val(0);
+              break;
+            };
+          case 13: {
+              $('#c4').modal('show');
+              $("#selectpicker").val(0);
+              break;
+            };
+          case 15: {
+              $('#c5').modal('show');
+              $("#selectpicker").val(0);
+              break;
+            };
+          case 16: {
+              $('#c6').modal('show');
+              $("#selectpicker").val(0);
+              break;
+            };
+          case 17: {
+              $('#c9').modal('show');
+              $("#selectpicker").val(0);
+              break;
+          };
+    }
+  }
+
+
+  function component_selected() {
+
+    var e = document.getElementById("selectpicker");
+    options_chooser = e.selectedIndex;
+    //alert(options_chooser);
+    open_modal(options_chooser);
+
+  }
+
+
+
+
+
+      function c1_data_checkbox() {
+        if ($('#c1_data_checkbox').is(':checked')) {
+          $("#data_url_input").attr("placeholder", "Enter data url");
+          if ($('#c1_key').val()) {
+            //console.log("base_url/" + $('#c1_key').val());
+            $("#data_url_input").val("base_url/" + $('#c1_key').val());
+          }
+          else {
+            alert("Enter Key");
+            $('#c1_data_checkbox').prop('checked', false);
+            $("#data_url_input").attr("placeholder", "Click here to add manual data");
+          }
+        }
+        else {
+          $("#data_url_input").attr("placeholder", "Click here to add manual data");
+          $("#data_url_input").val("");
+        }
+      }
+
+      function c2_data_checkbox() {
+        if ($('#c2_data_checkbox').is(':checked')) {
+          $("#c2_data_url_input").attr("placeholder", "Enter data url");
+          if ($('#c2_key').val()) {
+            //console.log("base_url/" + $('#c1_key').val());
+            $("#c2_data_url_input").val("base_url/" + $('#c2_key').val());
+          }
+          else {
+            alert("Enter Key");
+            $('#c2_data_checkbox').prop('checked', false);
+            $("#c2_data_url_input").attr("placeholder", "Click here to add manual data");
+          }
+        }
+        else {
+          $("#c2_data_url_input").attr("placeholder", "Click here to add manual data");
+          $("#c2_data_url_input").val("");
+        }
+      }
+
+
+      function c7_data_checkbox() {
+        if ($('#c7_data_checkbox').is(':checked')) {
+          $("#c7_data_url_input").attr("placeholder", "Enter data url");
+          if ($('#c7_key').val()) {
+            //console.log("base_url/" + $('#c1_key').val());
+            $("#c7_data_url_input").val("base_url/" + $('#c7_key').val());
+          }
+          else {
+            alert("Enter Key");
+            $('#c7_data_checkbox').prop('checked', false);
+            $("#c7_data_url_input").attr("placeholder", "Click here to add manual data");
+          }
+        }
+        else {
+          $("#c7_data_url_input").attr("placeholder", "Click here to add manual data");
+          $("#c7_data_url_input").val("");
+        }
+      }
+
+
+      function c3_validation_checkbox() {
+
+        if ($('#c3_validation').is(':checked')) {
+          document.getElementById("c3_validationText").disabled = false;
+          document.getElementById("c3_to_date").disabled = false;
+          document.getElementById("c3_from_date").disabled = false;
+
+        } else {
+
+          document.getElementById("c3_validationText").disabled = true;
+          document.getElementById("c3_to_date").disabled = true;
+          document.getElementById("c3_from_date").disabled = true;
+        }
+
+
+      }
+
+
+      function c8_validation_checkbox() {
+
+        if ($('#c8_validation').is(':checked')) {
+          document.getElementById("c8_validationText").disabled = false;
+          document.getElementById("c8_to_date").disabled = false;
+          document.getElementById("c8_from_date").disabled = false;
+
+        } else {
+
+          document.getElementById("c8_validationText").disabled = true;
+          document.getElementById("c8_to_date").disabled = true;
+          document.getElementById("c8_from_date").disabled = true;
+        }
+
+
+      }
+
+
+      function add_inline_data_clicked() {
+        console.log("clicked");
+        if ($('#c1_data_checkbox').is(':checked')) {
+
+        } else {
+          $('#add_inline_data').modal('show');
+
+        }
+      }
+
+      function c2_add_inline_data_clicked() {
+        console.log("clicked");
+        if ($('#c2_data_checkbox').is(':checked')) {
+
+        } else {
+          $("#c2_data_url_input").val("");
+          $("#c2_list_display_subHeader").val("");
+          $('#c2_add_inline_data').modal('show');
+
+        }
+      }
+
+
+      function c7_add_inline_data_clicked() {
+        console.log("clicked");
+        if ($('#c7_data_checkbox').is(':checked')) {
+
+        } else {
+          $("#c7_data_url_input").val("");
+          $("#c7_list_display_subHeader").val("");
+          $('#c7_add_inline_data').modal('show');
+
+        }
+      }
+
+
+      function c1_search_checkbox() {
+        if ($('#c1_search_checkbox').is(':checked')) {
+          $("#c1_search_url_input").show();
+          $("#c1_search_url_input").attr("placeholder", "Enter Search Url");
+          if ($('#c1_key').val()) {
+            //console.log("base_url/" + $('#c1_key').val());
+            $("#c1_search_url_input").val("base_url/" + $('#c1_key').val());
+          }
+          else {
+            alert("Enter Key");
+            $('#c1_search_checkbox').prop('checked', false);
+          }
+        }
+        else {
+          $("#c1_search_url_input").attr("placeholder", "Enter Search Url");
+          $("#c1_search_url_input").hide();
+        }
+      }
+
+      function add_item_to_list() {
+        if ($("#list_display_header").val()) {
+          var data_item = {};
+          var sub_title = 0, icon = 0;
+
+                    data_item.displayId = $("#list_display_header").val();
+          data_item.displayTitle = $("#list_display_header").val();
+          data_item.displaySubTitle = $("#list_display_subHeader").val();
+
+          if ($("#list_display_icon").val()) {
+            data_item.displayIcon = $("#list_display_icon").val();
+          }
+          else data_item.displayIcon = "null";
+
+
+          console.log("dataItem", data_item);
+          c1_inline_data.push(data_item)
+          console.log("c1_inline_data", c1_inline_data);
+
+          $("#C1_data_model").click();
+          $("#list_display_header").val("");
+          $("#list_display_subHeader").val("");
+          $("#list_display_icon").val("");
+
+
+
+          //}
+        }
+      }
+
+
+            function c2_add_item_to_list() {
+
+        var data_item = {};
+
+        data_item.displayId = $("#c2_list_display_header").val();
+        data_item.displayTitle = $("#c2_list_display_header").val();
+        data_item.displaySubTitle = $("#c2_list_display_subHeader").val();
+
+        if ($("#c2_list_display_icon").val()) {
+          data_item.displayIcon = $("#c2_list_display_icon").val();
+        }
+        else data_item.displayIcon = "null";
+
+
+        console.log("c2dataItem", data_item);
+        c2_inline_data.push(data_item)
+        console.log("c1_inline_data", c2_inline_data);
+
+        $("#c2_data_model").click();
+        $("#c2_list_display_header").val("");
+        $("#c2_list_display_icon").val("");
+
+
+      }
+
+
+
+      function c7_add_item_to_list() {
+
+        var data_item = {};
+
+        data_item.displayId = $("#c7_list_display_header").val();
+        data_item.displayTitle = $("#c7_list_display_header").val();
+        data_item.displaySubTitle = $("#c7_list_display_subHeader").val();
+
+        if ($("#c7_list_display_icon").val()) {
+          data_item.displayIcon = $("#c7_list_display_icon").val();
+        }
+        else data_item.displayIcon = "null";
+
+
+        console.log("c7dataItem", data_item);
+        c7_inline_data.push(data_item)
+        console.log("c7_inline_data", c7_inline_data);
+
+        $("#c7_data_model").click();
+        $("#c7_list_display_header").val("");
+        $("#c7_list_display_icon").val("");
+
+
+      }
+
+
+
+
+
+      function emptyC1Data() {
+        c1_inline_data.length = 0;
+      }
+
+      function emptyC1Element() {
+
+        $("#c1_list_header").val("");
+        $("#c1_list_subHeader").val("");
+        $("#c1_key").val("");
+        $("#data_url_input").val("");
+        $("#c1_search_url_input").val("");
+        c1_inline_data = [];
+
+      }
+
+
+      function emptyC2Element() {
+        $("#c2_list_header").val("");
+        $("#c2_list_subHeader").val("");
+        $("#c2_key").val("");
+        $("#c2_data_url_input").val("");
+        $("#c2_search_url_input").val("");
+        c2_inline_data = [];
+      }
+
+
+      function emptyC7Element() {
+        $("#c7_list_header").val("");
+        $("#c7_list_subHeader").val("");
+        $("#c7_key").val("");
+        $("#c7_data_url_input").val("");
+        $("#c7_search_url_input").val("");
+        c7_inline_data = [];
+      }
+
+
+      function process_c1() {
+        var currentTemplate = []
+        var page = {};
+
+        var c1_list_header = $("#c1_list_header").val();
+        var c1_list_subheader = $("#c1_list_subHeader").val();
+        var c1_key = $("#c1_key").val();
+        var data_url_input = $("#data_url_input").val();
+        var c1_search_url_input = $("#c1_search_url_input").val();
+
+
+        page.componentId = "C1";
+        page.key = c1_key;
+        page.componentDetails = {};
+
+        page.componentDetails.header = c1_list_header;
+        page.componentDetails.subHeader = c1_list_subheader;
+
+
+        if ($('#c1_data_checkbox').is(':checked')) {
+
+          page.componentDetails.dataUrl = data_url_input;
+          page.componentDetails.data = [];
+
+        } else {
+
+          page.componentDetails.dataUrl = "null";
+          page.componentDetails.data = c1_inline_data;
+
+        }
+
+        if ($('#c1_search_checkbox').is(':checked')) {
+          page.componentDetails.searchUrl = c1_search_url_input;
+        } else {
+          page.componentDetails.searchUrl = "null";
+        }
+
+        currentTemplate.push(page);
+        template.push(currentTemplate);
+        $("#C1_Close").click();
+
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+
+        emptyC1Element();
+        console.log("FinalTemplate =>", template);
+        //console.log("c1_inline_data =>",c1_inline_data);
+
+      }
+
+
+      function process_c2() {
+        var page = {};
+
+        var c2_list_header = $("#c2_list_header").val();
+        var c2_list_subheader = $("#c2_list_subHeader").val();
+        var c2_key = $("#c2_key").val();
+        var c2_data_url_input = $("#c2_data_url_input").val();
+        var c2_search_url_input = $("#c2_search_url_input").val();
+
+
+        alert(c2_list_header);
+        alert(c2_key);
+        alert(c2_data_url_input);
+        alert(c2_search_url_input);
+
+
+
+        page.componentId = "C2";
+        page.key = c2_key;
+        page.componentDetails = {};
+
+        page.componentDetails.header = c2_list_header;
+        page.componentDetails.subheader = c2_list_subheader;
+
+
+        if ($('#c2_data_checkbox').is(':checked')) {
+
+          page.componentDetails.dataUrl = c2_data_url_input;
+          page.componentDetails.data = [];
+
+        } else {
+
+          page.componentDetails.dataUrl = "null";
+          page.componentDetails.data = c2_inline_data;
+
+        }
+
+        if ($('#c1_search_checkbox').is(':checked')) {
+          page.componentDetails.searchUrl = c2_search_url_input;
+        } else {
+          page.componentDetails.searchUrl = "null";
+        }
+
+
+        console.log($('#c1_data_checkbox').is(':checked'));
+
+
+        var currentTemplate = [];
+        console.log("=>", page);
+        currentTemplate.push(page);
+        template.push(currentTemplate);
+        console.log("finalArray", template);
+        $("#c2_Close").click();
+
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+
+        emptyC2Element();
+
+        console.log("FinalTemplate =>", template);
+        console.log('c2_inline_data', c2_inline_data);
+
+
+      }
+
+
+
+      function process_c7() {
+        var page = {};
+
+        var c7_list_header = $("#c7_list_header").val();
+        var c7_list_subheader = $("#c7_list_subHeader").val();
+        var c7_key = $("#c7_key").val();
+        var c7_data_url_input = $("#c7_data_url_input").val();
+        var c7_search_url_input = $("#c7_search_url_input").val();
+
+
+        alert(c7_list_header);
+        alert(c7_key);
+        alert(c7_data_url_input);
+        alert(c7_search_url_input);
+
+
+
+        page.componentId = "C7";
+        page.key = c7_key;
+        page.componentDetails = {};
+
+        page.componentDetails.header = c7_list_header;
+        page.componentDetails.subheader = c7_list_subheader;
+
+
+        if ($('#c7_data_checkbox').is(':checked')) {
+
+          page.componentDetails.dataUrl = c7_data_url_input;
+          page.componentDetails.data = [];
+
+        } else {
+
+          page.componentDetails.dataUrl = "null";
+          page.componentDetails.data = c7_inline_data;
+
+        }
+
+        if ($('#c1_search_checkbox').is(':checked')) {
+          page.componentDetails.searchUrl = c7_search_url_input;
+        } else {
+          page.componentDetails.searchUrl = "null";
+        }
+
+
+        console.log($('#c7_data_checkbox').is(':checked'));
+
+
+        var currentTemplate = [];
+        console.log("=>", page);
+        currentTemplate.push(page);
+        template.push(currentTemplate);
+        console.log("finalArray", template);
+        $("#c7_Close").click();
+
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+        emptyC7Element();
+
+        console.log("FinalTemplate =>", template);
+        console.log('c7_inline_data', c7_inline_data);
+
+
+      }
+
+
+
+
+      function process_c3() {
+
+        var component = {};
+
+        var c3_list_header = $("#c3_list_header").val();
+        var c3_list_subHeader = $("#c3_list_subHeader").val();
+        var c3_key = $("#c3_key").val();
+
+        alert(c3_list_header + "|" + c3_list_subHeader + "|" + c3_key);
+
+
+
+        component.componentId = "C3";
+
+
+        if ($('#c3_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c3_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c3_list_header").val();
+        component.componentDetails.subHeader = $("#c3_list_subHeader").val();
+        component.componentDetails.validation = []
+        if ($('#c3_validation').is(':checked')) {
+
+          if ($('#c3_to_validation').is(':checked') && $('#c3_from_validation').is(':checked')) {
+            // alert("empty array");
+            // component.componentDetails.validationText = $("#c3_validationText").val();
+
+            var to_date = "";
+            var from_date = "";
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else if ($('#c3_to_validation').is(':checked')) {
+            alert("empty to");
+            var to_date = "";
+            var from_date = $("#c3_from_date").val();
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else if ($('#c3_from_validation').is(':checked')) {
+            alert("empty from");
+            var to_date = $("#c3_to_date").val();
+            var from_date = "";
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else {
+            alert("empty none");
+            var to_date = $("#c3_to_date").val();
+            var from_date = $("#c3_from_date").val();
+
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+            component.componentDetails.validationText = $("#c3_validationText").val();
+          }
+
+
+        } else {
+          component.componentDetails.validationText = "";
+        }
+
+        var currentTemplate = [];
+        console.log("component", component);
+        currentTemplate.push(component);
+        template.push(currentTemplate);
+        console.log("FinalTemplate =>", template);
+
+        $("#c3_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+/*        $("#c3_close").click();
+        $("#c3_list_header").val("");
+        $("#c3_list_subHeader").val("");
+        $("#c3_key").val("");
+        $("#c3_list_header").val("");
+        $("#c3_list_subHeader").val("");
+        $("#c3_validationText").val("");
+        $("#c3_to_date").val("");
+        $("#c3_from_date").val(""); */
+
+
+      }
+
+
+      function add_c3_currentPage() {
+        console.log("template length - ", template.length);
+        var tempLength = template.length;
+
+        var component = {};
+
+        var c3_list_header = $("#c3_list_header").val();
+        var c3_list_subHeader = $("#c3_list_subHeader").val();
+        var c3_key = $("#c3_key").val();
+
+        alert(c3_list_header + "|" + c3_list_subHeader + "|" + c3_key);
+
+
+
+        component.componentId = "C3";
+
+
+        if ($('#c3_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c3_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c3_list_header").val();
+        component.componentDetails.subHeader = $("#c3_list_subHeader").val();
+        component.componentDetails.validation = []
+        if ($('#c3_validation').is(':checked')) {
+
+          if ($('#c3_to_validation').is(':checked') && $('#c3_from_validation').is(':checked')) {
+            alert("empty array");
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else if ($('#c3_to_validation').is(':checked')) {
+            alert("empty to");
+            var to_date = "";
+            var from_date = $("#c3_from_date").val();
+            component.componentDetails.validation.push(to_date);
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else if ($('#c3_from_validation').is(':checked')) {
+            alert("empty from");
+            var to_date = $("#c3_to_date").val();
+            var from_date = "";
+            component.componentDetails.validation.push(to_date);
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validationText = $("#c3_validationText").val();
+
+          } else {
+            alert("empty none");
+            var to_date = $("#c3_to_date").val();
+            var from_date = $("#c3_from_date").val();
+            component.componentDetails.validation.push(to_date);
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validationText = $("#c3_validationText").val();
+          }
+
+
+        } else {
+          component.componentDetails.validationText = "";
+        }
+
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[tempLength - 1].push(component);
+        console.log("FinalTemplate =>", template);
+
+
+        $("#c3_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+/*        $("#c3_close").click();
+        $("#c3_list_header").val("");
+        $("#c3_list_subHeader").val("");
+        $("#c3_key").val("");
+        $("#c3_list_header").val("");
+        $("#c3_list_subHeader").val("");
+        $("#c3_validationText").val("");
+        $("#c3_to_date").val("");
+        $("#c3_from_date").val(""); */
+
+
+      }
+
+
+
+      function process_c4() {
+
+        var component = {};
+
+        var c4_list_header = $("#c4_list_header").val();
+        var c4_list_subHeader = $("#c4_list_subHeader").val();
+        var c4_key = $("#c4_key").val();
+
+//        alert(c4_list_header + "|" + c4_list_subHeader + "|" + c4_key);
+
+
+
+        component.componentId = "C4";
+
+
+        if ($('#c4_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c4_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c4_list_header").val();
+        component.componentDetails.subHeader = $("#c4_list_subHeader").val();
+
+        var currentPage = [];
+        console.log(component);
+        currentPage.push(component);
+        template.push(currentPage);
+        console.log("FinalTemplate =>", JSON.stringify(template, undefined, 2));
+
+        var count = 1;
+
+        //pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : '+component.componentDetails.header+'</div><div>DataUrl : '+component.componentDetails.dataUrl+'</div></div></li>';
+
+
+//        $('#componentList').append(template);
+//        var node = document.createElement("LI");                 // Create a <li> node
+//        node.appendChild(template);                              // Append the text to <li>
+//        document.getElementById("myList").innerHTML = template;
+//        $('#componentList').show();
+
+        $("#c4_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+      }
+
+
+      function add_c4_currentPage() {
+
+        var component = {};
+
+        var c4_list_header = $("#c4_list_header").val();
+        var c4_list_subHeader = $("#c4_list_subHeader").val();
+        var c4_key = $("#c4_key").val();
+
+        alert(c4_list_header + "|" + c4_list_subHeader + "|" + c4_key);
+
+
+
+        component.componentId = "C4";
+
+
+        if ($('#c4_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c4_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c4_list_header").val();
+        component.componentDetails.subHeader = $("#c4_list_subHeader").val();
+
+
+        console.log(component);
+
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[template.length - 1].push(component);
+        console.log("FinalTemplate =>", template);
+
+        $("#c4_close").click();
+
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+        //displayComponents(template[template.length-1]);
+
+      }
+
+
+      function process_c5() {
+        alert("c5");
+
+        var component = {};
+
+        var c5_list_header = $("#c5_list_header").val();
+        var c5_list_subHeader = $("#c5_list_subHeader").val();
+        var c5_key = $("#c5_key").val();
+        var c5_answers = $("#c5_answers").val();
+
+        var answer = JSON.parse(c5_answers);
+        console.log(answer);
+
+        alert(c5_list_header + "|" + c5_list_subHeader + "|" + c5_key);
+
+
+        component.componentId = "C5";
+
+
+        if ($('#c5_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c5_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c5_list_header").val();
+        component.componentDetails.subHeader = $("#c5_list_subHeader").val();
+        component.componentDetails.data = answer;
+
+        var currentTemplate = [];
+        console.log(component);
+        currentTemplate.push(component);
+        template.push(currentTemplate);
+        console.log("FinalTemplate =>", template);
+
+
+        $("#c5_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+      }
+
+      function add_c5_currentPage() {
+        alert("c5");
+
+        var component = {};
+
+        var c5_list_header = $("#c5_list_header").val();
+        var c5_list_subHeader = $("#c5_list_subHeader").val();
+        var c5_key = $("#c5_key").val();
+        var c5_answers = $("#c5_answers").val();
+
+        var answer = JSON.parse(c5_answers);
+        console.log(answer);
+
+        alert(c5_list_header + "|" + c5_list_subHeader + "|" + c5_key);
+
+
+        component.componentId = "C5";
+
+
+        if ($('#c5_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c5_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c5_list_header").val();
+        component.componentDetails.subHeader = $("#c5_list_subHeader").val();
+        component.componentDetails.data = answer;
+
+
+        console.log(component);
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[template.length - 1].push(component);
+        console.log("FinalTemplate =>", template);
+
+        $("#c5_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+      }
+
+      function process_c6() {
+
+        alert("c6");
+
+        var component = {};
+
+        var c6_list_header = $("#c6_list_header").val();
+        var c6_list_subHeader = $("#c6_list_subHeader").val();
+        var c6_key = $("#c6_key").val();
+        var c6_answers = $("#c6_answers").val();
+
+        var answer = JSON.parse(c6_answers);
+        console.log(answer);
+
+        alert(c6_list_header + "|" + c6_list_subHeader + "|" + c6_key);
+
+
+        component.componentId = "C6";
+
+
+        if ($('#c6_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c6_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c6_list_header").val();
+        component.componentDetails.subHeader = $("#c6_list_subHeader").val();
+        component.componentDetails.data = answer;
+
+
+        var currentTemplate = [];
+        console.log(component);
+        currentTemplate.push(component);
+        template.push(currentTemplate);
+
+        console.log("FinalTemplate =>", template);
+
+        $("#c6_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+      }
+
+
+      function add_c6_currentPage() {
+
+        alert("c6");
+
+        var component = {};
+
+        var c6_list_header = $("#c6_list_header").val();
+        var c6_list_subHeader = $("#c6_list_subHeader").val();
+        var c6_key = $("#c6_key").val();
+        var c6_answers = $("#c6_answers").val();
+
+        var answer = JSON.parse(c6_answers);
+        console.log(answer);
+
+        alert(c6_list_header + "|" + c6_list_subHeader + "|" + c6_key);
+
+
+        component.componentId = "C6";
+
+
+        if ($('#c6_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c6_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c6_list_header").val();
+        component.componentDetails.subHeader = $("#c6_list_subHeader").val();
+        component.componentDetails.data = answer;
+
+
+
+        console.log(component);
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[template.length - 1].push(component);
+
+        console.log("FinalTemplate =>", template);
+
+        $("#c6_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+      }
+
+
+
+      function process_c8() {
+
+        var component = {};
+
+        var c8_list_header = $("#c8_list_header").val();
+        var c8_list_subHeader = $("#c8_list_subHeader").val();
+        var c8_key = $("#c8_key").val();
+
+        alert(c8_list_header + "|" + c8_list_subHeader + "|" + c8_key);
+
+
+
+        component.componentId = "C8";
+
+
+        if ($('#c8_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c8_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c8_list_header").val();
+        component.componentDetails.subHeader = $("#c8_list_subHeader").val();
+        component.componentDetails.validation = []
+        if ($('#c8_validation').is(':checked')) {
+
+          if ($('#c8_to_validation').is(':checked') && $('#c8_from_validation').is(':checked')) {
+            // alert("empty array");
+            // component.componentDetails.validationText = $("#c8_validationText").val();
+
+            var to_date = "";
+            var from_date = "";
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else if ($('#c8_to_validation').is(':checked')) {
+            alert("empty to");
+            var to_date = "";
+            var from_date = $("#c8_from_date").val();
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else if ($('#c8_from_validation').is(':checked')) {
+            alert("empty from");
+            var to_date = $("#c8_to_date").val();
+            var from_date = "";
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else {
+            alert("empty none");
+            var to_date = $("#c8_to_date").val();
+            var from_date = $("#c8_from_date").val();
+
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+            component.componentDetails.validationText = $("#c8_validationText").val();
+          }
+
+
+        } else {
+          component.componentDetails.validationText = "";
+        }
+
+        var currentTemplate = [];
+        console.log("component", component);
+        currentTemplate.push(component);
+        template.push(currentTemplate);
+        console.log("FinalTemplate =>", template);
+
+
+        $("#c8_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+
+/*        $("#c8_close").click();
+        $("#c8_list_header").val("");
+        $("#c8_list_subHeader").val("");
+        $("#c8_key").val("");
+        $("#c8_list_header").val("");
+        $("#c8_list_subHeader").val("");
+        $("#c8_validationText").val("");
+        $("#c8_to_date").val("");
+        $("#c8_from_date").val(""); */
+
+
+      }
+
+
+
+      function add_c8_currentPage() {
+        console.log("template length - ", template.length);
+        var tempLength = template.length;
+
+        var component = {};
+
+        var c8_list_header = $("#c8_list_header").val();
+        var c8_list_subHeader = $("#c8_list_subHeader").val();
+        var c8_key = $("#c8_key").val();
+
+        alert(c8_list_header + "|" + c8_list_subHeader + "|" + c8_key);
+
+
+
+        component.componentId = "C8";
+
+
+        if ($('#c8_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c8_key;
+        component.componentDetails = {};
+
+
+        component.componentDetails.header = $("#c8_list_header").val();
+        component.componentDetails.subHeader = $("#c8_list_subHeader").val();
+        component.componentDetails.validation = []
+        if ($('#c8_validation').is(':checked')) {
+
+          if ($('#c8_to_validation').is(':checked') && $('#c8_from_validation').is(':checked')) {
+            alert("empty array");
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else if ($('#c8_to_validation').is(':checked')) {
+            alert("empty to");
+            var to_date = "";
+            var from_date = $("#c8_from_date").val();
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else if ($('#c8_from_validation').is(':checked')) {
+            alert("empty from");
+            var to_date = $("#c8_to_date").val();
+            var from_date = "";
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+
+          } else {
+            alert("empty none");
+            var to_date = $("#c8_to_date").val();
+            var from_date = $("#c8_from_date").val();
+            component.componentDetails.validation.push(from_date);
+            component.componentDetails.validation.push(to_date);
+
+            component.componentDetails.validationText = $("#c8_validationText").val();
+          }
+
+
+        } else {
+          component.componentDetails.validationText = "";
+        }
+
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[tempLength - 1].push(component);
+        console.log("FinalTemplate =>", template);
+
+
+        $("#c8_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+
+/*        $("#c8_close").click();
+        $("#c8_list_header").val("");
+        $("#c8_list_subHeader").val("");
+        $("#c8_key").val("");
+        $("#c8_list_header").val("");
+        $("#c8_list_subHeader").val("");
+        $("#c8_validationText").val("");
+        $("#c8_to_date").val("");
+        $("#c8_from_date").val(""); */
+
+
+      }
+
+
+
+
+      function process_c9() {
+
+        alert("c9");
+
+        var component = {};
+
+        var c9_key = $("#c9_key").val();
+
+        component.componentId = "C9";
+
+        if ($('#c9_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c9_key;
+        component.componentDetails = {};
+
+        var currentTemplate = [];
+        console.log(component);
+        currentTemplate.push(component);
+        template.push(currentTemplate);
+
+        console.log("FinalTemplate =>", template);
+
+
+        $("#c9_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+
+      }
+
+
+      function add_c9_currentPage() {
+
+        alert("c9");
+
+        var component = {};
+
+        var c9_key = $("#c9_key").val();
+
+        component.componentId = "C9";
+
+        if ($('#c9_iscompulsory').is(':checked')) {
+          component.compulsory = 1;
+
+        } else {
+          component.compulsory = 0;
+        }
+
+
+        component.key = c9_key;
+        component.componentDetails = {};
+
+        console.log(component);
+
+        var index = template.indexOf(currPage);
+        currPage.push(component);
+        template[index] = currPage;
+
+        //template[template.length - 1].push(component);
+
+        console.log("FinalTemplate =>", template);
+
+        $("#c9_close").click();
+        $('#componentPicker').css('display', 'none');
+        $('#pagesList').empty();
+
+
+        displayPagesToEdit(template);
+
+      }
+
+
+
+
+
+
+//-------------------------------------
+
+
+/*
+<li class="list-group-item">
+  <div class="no_margin">
+    <div class="no_margin">
+      <div><b>Template ID : '+data['temp'][i]['_id']+'</b></div>
+      <div>Category : '+data['temp'][i]['name']+'</div>
+    </div>
+    <div class="row no_margin">
+      <div class="col-md-4"></div>
+      <div class="col-md-8">
+        <div>
+          <div class="row no_margin" style="cursor: pointer">
+            <div class="list_button" id='+data['temp'][i]['_id']+' onclick="duplicate(this.id);">Duplicate</div>
+              <div class="list_button" style="margin-left:5px;" id='+data['temp'][i]['_id']+' onclick="editTemplate(this.id);">Edit</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</li> */
+
+//---------------------------------------------------------------------------------------//
+
+//---------------------------------------------------------------------------------------//
+
+
+/*
+'
+<li class="list-group-item">
+   <div class="no_margin">
+   <div class="no_margin">
+   <div class="col-md-8">
+   <div><b>Component No. : '+count+'</b></div>
+   <div>Component ID : '+component.componentId+'</div>
+   <div>Header : <input id="component_header" type="text" value="'+component.componentDetails.header+'" /></div>
+    <div>
+      Sub-Header : <input id="component_subheader" type="text" value="'+component.componentDetails.subHeader+'" />
+      <div>DataUrl : <input id="component_dataurl" type="text" value="'+component.componentDetails.dataUrl+'" /></div>
+      <div>SearchUrl : <input id="component_searchurl" type="text" value="'+component.componentDetails.searchUrl+'" /></div>
+    </div>
+    <div class="col-md-4">
+        <div class="row no_margin" style="cursor: pointer">
+                  <div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div>
+        </div>
+    
+    </div>
+
+      <div class="row no_margin">
+         <div class="col-md-4"></div>
+         <div class="col-md-8">
+            <div>
+               <div class="row no_margin" style="cursor: pointer">
+                  <div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div>
+
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</li>
+'
+
+*/
+
+
+
+</script>
+   
+</body>
+</html> 
