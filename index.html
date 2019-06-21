@@ -1563,6 +1563,7 @@ crossorigin="anonymous"></script>
             template = temp_data.component;
             $('#take_template_name_modal').modal('toggle');
             $('#modal_input').val(temp_data.name);
+            log += ' Template ID: ' + id + ' is duplicated , ';
             displayPagesToEdit(temp_data.component);
           }
       });
@@ -1645,13 +1646,13 @@ crossorigin="anonymous"></script>
     if(currPage.length == 1) {
 
         allPages.splice(pageIndex, 1);
-        log += 'Page No. ' + (pageIndex+1) + ' removed from Template ' + templateId + ' ,  ';
+        log += 'Page No. ' + (pageIndex+1) +  ' ,  ';
         console.log(JSON.stringify(allPages, undefined, 2));
     
     } else {
     
       currPage.splice(componentIndex, 1);
-      log += 'Component No. ' + (componentIndex+1) + ' removed from Page No. ' + (pageIndex+1) + ' of Template ' + templateId + ' ,  ';
+      log += 'Component No. ' + (componentIndex+1) + ' removed from Page No. ' + (pageIndex+1) + ' ,  ';
       console.log(JSON.stringify(currPage, undefined, 2));
         
     }
@@ -1761,7 +1762,7 @@ crossorigin="anonymous"></script>
       $('#refresh').css('visibility', 'hidden');
       $('#add_template').css('visibility', 'hidden');
 
-  //    log += 'Data Updated of Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' of Template ' + templateId + ' ,  ';
+      log += 'Data Updated of Component No. ' + (componentIndex+1) + ' of Page No. ' + (pageLoc+1) + ' ,  ';
 
       console.log("New: " + JSON.stringify(allPages, undefined, 2));
 
@@ -2387,6 +2388,7 @@ async  function addDataInComponent(componentIndex) {
   function deletePage(index) {
 
     if(confirm("Are you sure? Do you want to delete this page?")) {
+        log += ' Page No. ' + (index+1) + ' deleted , ';
         allPages.splice(index, 1);
     }
     $('#pagesList').empty(); 
@@ -2398,15 +2400,19 @@ async  function addDataInComponent(componentIndex) {
 
     console.log("Saving New Template: ");
     console.log("Final: " + JSON.stringify(template, undefined, 2));
+    console.log("Log: " + log);
     //alert("Saving " + template_name);
     //$('#refresh').click();
 
     var newTemplate = {
       name : template_name,
-      component : template
+      component : template,
+      generatedLog : log
     }
 
     var strNewTemplate = JSON.stringify(newTemplate);
+
+    console.log("Sending: " + strNewTemplate);
 
     $.ajax({ 
           type: 'POST',
