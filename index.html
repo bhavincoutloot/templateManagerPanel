@@ -207,6 +207,7 @@ pre{
                 <option value="14">C5 - Multiple Choice Questions</option>
                 <option value="15">C6 - Single Choice Questions</option>
                 <option value="16">C9 - Static Page</option>
+                <option value="17">C10</option>
               </optgroup>
             </select>
           </div>
@@ -982,6 +983,62 @@ custom-control-label" for="c9_iscompulsory">Is Compulsory?</label>
     <!-- C9 -->
 
 
+
+    <!-- C10 -->
+    <div class="modal fade right" id="c10" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true"
+      data-backdrop="static" data-keyboard="false">
+
+      <!-- Add class .modal-full-height and then add class .modal-right (or other classes from list above) to set a position to the modal -->
+      <div class="modal-dialog modal-full-height modal-right" role="document">
+
+
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title w-100" id="myModalLabel">C10</h4>
+            <button type="button" class="close" id="c4_close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+
+            <input type="text" id="c10_list_header" class="form-control" placeholder="Enter Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c10_list_subHeader" class="form-control" placeholder="Enter Sub Header">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c10_key" class="form-control" placeholder="Enter Key">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+            <input type="text" id="c10_type" class="form-control" placeholder="Enter Type">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>            
+
+            <input type="text" id="c10_limit" class="form-control" placeholder="Enter Limit">
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+
+
+            <div class="custom-control custom-checkbox">
+              <input type="checkbox" class="custom-control-input" id="c10_iscompulsory">
+              <label class="custom-control-label" for="c10_iscompulsory">Is Compulsory?</label>
+            </div>
+            <div class="gap" style="background:#FFF!important;padding: 10px;"></div>
+
+          </div>
+
+          <div class="modal-footer">
+            <button id="save_component" type="button" class="form-control btn btn-primary" onclick="process_c10()">Save changes</button>
+          </div>
+
+          <div class="modal-footer">
+            <button id="add_component" type="button" class="form-control btn btn-primary" onclick="add_c10_currentPage()">Add In Same Page</button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- C10 -->
 
 
 
@@ -2478,6 +2535,11 @@ async  function addDataInComponent(componentIndex) {
               $("#selectpicker").val(0);
               break;
           };
+          case 18: {
+              $('#c10').modal('show');
+              $('#selectpicker').val(0);
+              break;
+          };
     }
   }
 
@@ -3796,6 +3858,127 @@ async  function addDataInComponent(componentIndex) {
       }
 
 
+
+function process_c10() {
+
+  var component = {};
+
+  var c10_list_header = $("#c10_list_header").val();
+  var c10_list_subHeader = $("#c10_list_subHeader").val();
+  var c10_key = $("#c10_key").val();
+  var c10_type = $("#c10_type").val();
+  var c10_limit = $('#c10_limit').val();
+
+//        alert(c10_list_header + "|" + c10_list_subHeader + "|" + c10_key);
+
+
+
+  component.componentId = "C10";
+
+
+  if ($('#c10_iscompulsory').is(':checked')) {
+    component.compulsory = 1;
+
+  } else {
+    component.compulsory = 0;
+  }
+
+
+  component.key = c10_key;
+  component.componentDetails = {};
+
+
+  component.componentDetails.header = $("#c10_list_header").val();
+  component.componentDetails.subHeader = $("#c10_list_subHeader").val();
+  component.componentDetails.data = [];
+  component.componentDetails.type = c10_type;
+  component.componentDetails.limit = c10_limit;
+
+
+  var currentPage = [];
+  console.log(component);
+  currentPage.push(component);
+  template.push(currentPage);
+  console.log("FinalTemplate =>", JSON.stringify(template, undefined, 2));
+
+  var count = 1;
+
+  //pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : '+component.componentDetails.header+'</div><div>DataUrl : '+component.componentDetails.dataUrl+'</div></div></li>';
+
+
+//        $('#componentList').append(template);
+//        var node = document.createElement("LI");                 // Create a <li> node
+//        node.appendChild(template);                              // Append the text to <li>
+//        document.getElementById("myList").innerHTML = template;
+//        $('#componentList').show();
+
+  $("#c10_close").click();
+  $('#componentPicker').css('display', 'none');
+  $('#pagesList').empty();
+
+
+  displayPagesToEdit(template);
+
+}
+
+
+function add_c10_currentPage() {
+
+  var component = {};
+
+  var c10_list_header = $("#c10_list_header").val();
+  var c10_list_subHeader = $("#c10_list_subHeader").val();
+  var c10_key = $("#c10_key").val();
+  var c10_type = $("#c10_type").val();
+  var c10_limit = $('#c10_limit').val();
+
+//  alert(c10_list_header + "|" + c10_list_subHeader + "|" + c10_key);
+
+
+
+  component.componentId = "C10";
+
+
+  if ($('#c10_iscompulsory').is(':checked')) {
+    component.compulsory = 1;
+
+  } else {
+    component.compulsory = 0;
+  }
+
+
+  component.key = c10_key;
+  component.componentDetails = {};
+
+
+  component.componentDetails.header = $("#c10_list_header").val();
+  component.componentDetails.subHeader = $("#c10_list_subHeader").val();
+  component.componentDetails.data = [];
+  component.componentDetails.type = c10_type;
+  component.componentDetails.limit = c10_limit;
+
+
+  console.log(component);
+
+
+  var index = template.indexOf(currPage);
+  currPage.push(component);
+  template[index] = currPage;
+
+  //template[template.length - 1].push(component);
+  console.log("FinalTemplate =>", template);
+
+  $("#c10_close").click();
+
+  $('#componentPicker').css('display', 'none');
+  $('#pagesList').empty();
+
+
+  displayPagesToEdit(template);
+
+  //displayComponents(template[template.length-1]);
+
+}
 
 
 
