@@ -995,7 +995,7 @@ custom-control-label" for="c9_iscompulsory">Is Compulsory?</label>
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title w-100" id="myModalLabel">C10</h4>
-            <button type="button" class="close" id="c4_close" data-dismiss="modal" aria-label="Close">
+            <button type="button" class="close" id="c10_close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -1058,7 +1058,7 @@ crossorigin="anonymous"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.7.6/js/mdb.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.7/dist/js/bootstrap-select.min.js"></script>
-<!-- <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> -->
+ <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> 
 
 
 <script>
@@ -1383,7 +1383,7 @@ crossorigin="anonymous"></script>
         updatedComponent['componentDetails'] = {};
 
       updatedComponent.componentDetails.header = ($('#component_header_' + (componentIndex+1)).val() ? $('#component_header_' + (componentIndex+1)).val() : "");
-      updatedComponent.componentDetails.subHeader = ($('#component_subheader_' + (componentIndex+1)).val() ? $('#component_subheader' + (componentIndex+1)).val() : "");
+      updatedComponent.componentDetails.subHeader = ($('#component_subheader_' + (componentIndex+1)).val() ? $('#component_subheader_' + (componentIndex+1)).val() : "");
 
 
       if(component.componentId == "C10") { 
@@ -1512,6 +1512,11 @@ crossorigin="anonymous"></script>
 
             pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
 
+          }  else if (component.componentId == "C10") {
+
+            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div class="m-2">Limit : <input id="component_limit" type="text" value="'+component.componentDetails.limit+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+
+
           } else {
            
           
@@ -1541,8 +1546,14 @@ crossorigin="anonymous"></script>
 
           } else {
 
-            pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div>Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div>DataUrl : <input id="component_dataurl_'+count+'" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div>SearchUrl : <input id="component_searchurl_'+count+'" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+            if (component.componentId == "C10") {
 
+              pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div class="m-2">Limit : <input id="component_limit" type="text" value="'+component.componentDetails.limit+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+
+              } else {
+
+                  pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div><b>Component No. : '+count+'</b></div><div>Component ID : '+component.componentId+'</div><div>Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div>Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div>DataUrl : <input id="component_dataurl_'+count+'" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div>SearchUrl : <input id="component_searchurl_'+count+'" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponent('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+            }
           }
 
           count++;
@@ -1669,17 +1680,19 @@ crossorigin="anonymous"></script>
 
           if(component.componentDetails.hasOwnProperty('data') && component.componentDetails.data.length > 0) {
           
-          if (component.componentId == "C6") {
+            if (component.componentId == "C6") {
 
-            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key_'+count+'" type="text" value="'+component.key+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponentToEdit('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+              pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key_'+count+'" type="text" value="'+component.key+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponentToEdit('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
 
-          } /*else if (component.componentId == "C3" || component.componentId == "C4" || component.componentId == "C5" || component.componentId == "C9") {
+            }  else if (component.componentId == "C10") {
+
+              pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div class="m-2">Limit : <input id="component_limit" type="text" value="'+component.componentDetails.limit+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
 
 
-          }*/ else {
-           
-            pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponentToEdit('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
-          }
+            } else {
+             
+              pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="removeComponentToEdit('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+            }
             var dataItems = '<tr> <td> Title </td> <td> Id </td> <td> Sub Title </td> <td> Icon </td> </tr>';
             var itemCount = 0;
 
@@ -1698,8 +1711,14 @@ crossorigin="anonymous"></script>
 
           } else {
 
-            pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key_'+count+'" type="text" value="'+component.key+'" /></div><div class="m-2">DataUrl : <input id="component_dataurl_'+count+'" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div class="m-2">SearchUrl : <input id="component_searchurl_'+count+'" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponentToEdit('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+            if (component.componentId == "C10") {
 
+              pageComponents += '<li class="list-group-item" ><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : '+component.componentId+'</div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key" type="text" value="'+component.key+'" /></div><div class="m-2">Limit : <input id="component_limit" type="text" value="'+component.componentDetails.limit+'" /></div><div style="float:right;"><div class="list_button" style="margin-left:5px;" onclick="editComponentToEdit('+(count-1)+');">Save</div><div class="list_button" style="margin-left:5px;" onclick="removeComponent('+(pageIndex)+', '+(count-1)+');">Remove</div></div></div><br><table id="data_table">';
+
+            } else {
+
+              pageComponents += '<li class="list-group-item"><div class="no_margin"><div class="no_margin"><div class="m-2"><b>Component No. : '+count+'</b></div><div class="m-2">Component ID : <input id="component_id" type="text" value="'+component.componentId+'" /></div><div class="m-2">Header : <input id="component_header_'+count+'" type="text" value="'+component.componentDetails.header+'" /></div><div class="m-2">Sub-Header : <input id="component_subheader_'+count+'" type="text" value="'+component.componentDetails.subHeader+'" /></div><div class="m-2">Key : <input id="component_key_'+count+'" type="text" value="'+component.key+'" /></div><div class="m-2">DataUrl : <input id="component_dataurl_'+count+'" type="text" value="'+component.componentDetails.dataUrl+'" /></div><div class="m-2">SearchUrl : <input id="component_searchurl_'+count+'" type="text" value="'+component.componentDetails.searchUrl+'" /></div><div class="row no_margin"><div><div><div class="row no_margin" style="cursor: pointer"><div style="float:left"><div class="list_button" style="margin-left:5px;" onclick="editComponentToEdit('+(count-1)+');">Save</div></div></div></div></div></div></div></li>';
+            }
           }
 
           count++;
@@ -1752,14 +1771,14 @@ crossorigin="anonymous"></script>
       var updatedComponent = {};
 
 
-        updatedComponent['componentId'] = $('#component_id').val();
+        updatedComponent['componentId'] = component.componentId;
         if(component.componentId == "C6") updatedComponent['key'] = $('#component_key').val();
         else updatedComponent['key'] = component.key;
         
          updatedComponent['componentDetails'] = {};
 
       updatedComponent.componentDetails.header = ($('#component_header_' + (componentIndex+1)).val() ? $('#component_header_' + (componentIndex+1)).val() : "");
-      updatedComponent.componentDetails.subHeader = ($('#component_subheader' + (componentIndex+1)).val() ? $('#component_subheader' + (componentIndex+1)).val() : "");
+      updatedComponent.componentDetails.subHeader = ($('#component_subheader_' + (componentIndex+1)).val() ? $('#component_subheader_' + (componentIndex+1)).val() : "");
 
       if(component.componentId == "C10") { 
         updatedComponent.componentDetails.limit = $('#component_limit').val();
@@ -2393,7 +2412,7 @@ async  function addDataInComponent(componentIndex) {
           pageComponents = '';
           pageDetails = '';
 
-          if(page[0].componentId == 'C1' || page[0].componentId == 'C2' || page[0].componentId == 'C7' || page[0].componentId == 'C8') {
+          if(page[0].componentId == 'C1' || page[0].componentId == 'C2' || page[0].componentId == 'C7' || page[0].componentId == 'C8' ) {
             pageComponents = page[0].componentId;
             pageDetails = page[0].componentDetails.header;
 
